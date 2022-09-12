@@ -12,8 +12,24 @@ services:
     volumes:
       - .:/usr/src/app
       - ./node_modules:/home/nodejs/node_modules
+    restart: unless-stopped
 
   mongodb:
     image: mongo:4
     env_file:
       - .env
+
+  sshd:
+    image: lscr.io/linuxserver/openssh-server:latest
+    environment:
+      - PUBLIC_KEY_DIR=/pubkeys
+      - PASSWORD_ACCESS=false
+      - USER_NAME=admin
+    volumes:
+      - ./app:/srv/app
+      - ./config:/srv/config
+      - ./pubkeys:/pubkeys
+      - ./sshconf:/config
+    ports:
+      - "${SSH_PORT}:2222"
+
